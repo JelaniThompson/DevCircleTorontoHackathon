@@ -17,7 +17,8 @@ const
   express = require('express'),
   https = require('https'),  
   request = require('request'),
-  Shopify = require('shopify-api-node');
+  Shopify = require('shopify-api-node'),
+  fs = require('fs');
 
 var app = express();
 app.set('port', process.env.PORT || 5000);
@@ -324,6 +325,7 @@ function respondToHelpRequestWithTemplates(recipientId, requestForHelpOnFeature)
     case 'QR_GET_PRODUCT_LIST':
       var products = shopify.product.list({ limit: requestPayload.limit});
       products.then(function(listOfProducs) {
+        console.log("bug 1"); 
         listOfProducs.forEach(function(product) {
           var url = HOST_URL + "/product.html?id="+product.id;
           templateElements.push({
@@ -342,8 +344,6 @@ function respondToHelpRequestWithTemplates(recipientId, requestForHelpOnFeature)
             ]
           });
         });
-
-        
         var messageData = {
           recipient: {
             id: recipientId
@@ -361,7 +361,9 @@ function respondToHelpRequestWithTemplates(recipientId, requestForHelpOnFeature)
 
         callSendAPI(messageData);
 
-      });
+      }).catch(function(error) {
+        console.log("promise rejected"); 
+      }); 
 
       break;
 
