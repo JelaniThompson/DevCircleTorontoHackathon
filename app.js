@@ -114,10 +114,30 @@ function verifyRequestSignature(req, res, buf) {
  *
  */
 app.get('/webhook', function(req, res) {
+
   if (req.query['hub.mode'] === 'subscribe' &&
       req.query['hub.verify_token'] === FB_VALIDATION_TOKEN) {
     console.log("[app.get] Validating webhook");
+    let body = req.body; 
+    if (body.object == 'page') { 
+
+      body.entry.forEach(function(entry) {
+        let webhook_event = entry.messaging[0]; 
+        console.log(webhook_event); 
+
+        if (webhook_event.message) {
+          handleMessage(webhook_event.message); 
+        } else if (webhook_event.postback) {
+          handlePostback(webhook_event.postback);
+        }
+      }); 
+        res.status(200).send('EVENT_RECIEVED'); 
+      } else { 
+        res.sendStatus(404); 
+      }; 
     res.status(200).send(req.query['hub.challenge']);
+
+    
   } else {
     console.error("Failed validation. Make sure the validation tokens match.");
     res.sendStatus(403);          
@@ -221,15 +241,17 @@ function receivedMessage(event) {
   }
 
   var messageText = message.text;
-  if (messageText) {
+  var messageImage = message.attachments; 
 
+  if (message.attachments) {
+    sendImageOptionsAsButtonsTemplates(senderID, messageImage); 
+  } else if (messageText) {
     var lcm = messageText.toLowerCase();
     switch (lcm) {
       // if the text matches any special keywords, handle them accordingly
       case 'help':
         sendHelpOptionsAsButtonTemplates(senderID);
         break;
-      
       default:
         // otherwise, just echo it back to the sender
         sendTextMessage(senderID, messageText);
@@ -526,6 +548,62 @@ function callSendProfile() {
       console.error("[callSendProfile] Send profile call failed", response.statusCode, response.statusMessage, body.error);
     }
   });  
+}
+
+// Handles messages events
+function sendImageOptionsAsButtonsTemplates(recipientId, recieved_image) {
+  console.log("[sendImageOptionsAsButtonTemplates] Sending the Image Options Menu"); 
+  let attachment_url = recieved_image[0].payload.url; 
+  var messageData = { 
+    recipient: {
+      id: recipientId
+    }, 
+    message: {
+      attachment: {
+        type: "template", 
+        payload: { 
+          template_type: "generic", 
+          elements: [{ 
+            title: "Is this the right picture?", 
+            subtitle: "Tap a button to answer", 
+            image_url: attachment_url, 
+            "buttons": [
+              { 
+                type: "postback", 
+                title: "Yes!", 
+                payload: "yes", 
+              }, 
+              {
+                type: "postback", 
+                title: "No!", 
+                payload: "no"
+              }
+            ]
+          }]
+        }
+      }
+    }
+  }; 
+    
+    // Sends the response message
+    callSendAPI(messageData);   
+}
+
+// Handles messaging_postbacks events
+function handlePostback(received_postback) {
+  let response;
+  
+  // Get the payload for the postback
+  let payload = received_postback.payload;
+
+  // Set the response based on the postback payload
+  if (payload === 'yes') {
+    response = { "text": "Thanks!" }
+  } else if (payload === 'no') {
+    response = { "text": "Oops, try sending another image." }
+  }
+  // Send the message to acknowledge the postback
+  callSendAPI(response); 
 }
 
 /*
