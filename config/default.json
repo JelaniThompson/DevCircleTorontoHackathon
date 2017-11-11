@@ -1,13 +1,13 @@
 {
     "sh_shopName": "dev-circle-toronto-hackathon",
-    "host_url": "http://e8fe90ff.ngrok.io", //ngrok URL here
+    "host_url": "http://4fd7088e.ngrok.io", //ngrok URL here
 
     //FACEBOOK CREDENTIALS
-    "fb_appSecret": "",
-    "fb_pageAccessToken": "",
-    "fb_validationToken": "",
+    "fb_appSecret": "8b975cf63dff3237d565b697102e9262",
+    "fb_pageAccessToken": "EAACFsS6DKYQBAOHnQrZCD4e5uNXRClwZAxaZB7Llz9HZCU2BZAhjjZB7JjClGZBqYrpxZCGJh9RyJsTbZBA66T5HvJmmtQjJvZAwFZCHWAmgeLvyFp7IqtDuVw4gvTdwyl1PAMy3qqsKTEMeZCF2Askvf3nqZCSup0Tm6XW9FCvOxrVD1nTpO3CUlemuF",
+    "fb_validationToken": "Apples 'n' Oranges",
 
     //SHOPIFY CREDENTIALS
-    "sh_apiKey": "",
-    "sh_apiPassword": "",
+    "sh_apiKey": "105c8b81913078c7d0c5ad004a29ff10",
+    "sh_apiPassword": "450746da081f91976ad258ade0d883a5"
 }
