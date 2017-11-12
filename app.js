@@ -353,7 +353,6 @@ function respondToHelpRequestWithTemplates(recipientId, requestForHelpOnFeature)
     case 'QR_GET_PRODUCT_LIST':
       var products = shopify.product.list({ limit: requestPayload.limit});
       products.then(function(listOfProducs) {
-        console.log("bug 1"); 
         listOfProducs.forEach(function(product) {
           var url = HOST_URL + "/product.html?id="+product.id;
           templateElements.push({
@@ -442,19 +441,25 @@ function respondToHelpRequestWithTemplates(recipientId, requestForHelpOnFeature)
               id: recipientId
             },
             message: {
-              attachment: {
-                type: "template",
-                payload: {
-                  template_type: "generic",
-                  elements: templateElements
-                }
-              }
+              text: "Whoops"
             }
           };
 
           callSendAPI(messageData);
       }); 
 
+      case 'No':
+        console.log("No was pressed"); 
+        var messageData = {
+          recipient: {
+            id: recipientId
+          },
+          message: {
+            text: "Beep Boop. I got it wrong. I'm still learning. Send another image."
+          }
+        };
+        callSendAPI(messageData);
+        
       break;
   }
 
@@ -620,8 +625,7 @@ function sendImageOptionsAsButtonsTemplates(recipientId, recieved_image) {
             type: "postback", 
             title: response.get().articles[i].article_name, 
             payload: JSON.stringify({action: response.get().articles[i].article_name, limit:3})
-          } 
-          );  
+          });  
         var messageData = { 
           recipient: {
             id: recipientId
@@ -642,6 +646,12 @@ function sendImageOptionsAsButtonsTemplates(recipientId, recieved_image) {
           }
         };        
       }
+      clothing_array.push(
+        {
+          type: "postback", 
+          title: "No", 
+          payload: JSON.stringify({action: "No", limit:0})
+        }); 
           
     // Sends the response message
     callSendAPI(messageData);   
