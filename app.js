@@ -21,6 +21,7 @@ const
   fs = require('fs');
 
 var app = express();
+var Algorithmia = require('algorithmia'); 
 app.set('port', process.env.PORT || 5000);
 app.set('view engine', 'ejs');
 app.use(bodyParser.json({ verify: verifyRequestSignature }));
@@ -30,7 +31,12 @@ app.use(express.static('public'));
  * Open config/default.json and set your config values before running this code. 
  * You can also set them using environment variables.
  *
- */
+ */ 
+
+// App Secret can be retrieved from the Algorithm dashboard
+const ALGORITHMIA_SECRET = (process.env.ALGORITHMIA_SECRET) ? 
+  process.env.ALGORITHMIA_SECRET : 
+  config.get('algorithmia_key'); 
 
 // App Secret can be retrieved from the App Dashboard
 const FB_APP_SECRET = (process.env.FB_APP_SECRET) ? 
@@ -550,43 +556,90 @@ function callSendProfile() {
   });  
 }
 
-// Handles messages events
+// Handles image as it comes it and returns it to user
 function sendImageOptionsAsButtonsTemplates(recipientId, recieved_image) {
-  console.log("[sendImageOptionsAsButtonTemplates] Sending the Image Options Menu"); 
+  console.log("[sendImageOptionsAsButtonTemplates] Sending the Image Options Menu");  
+  console.log(JSON.stringify(recieved_image)); 
   let attachment_url = recieved_image[0].payload.url; 
-  var messageData = { 
-    recipient: {
-      id: recipientId
-    }, 
-    message: {
-      attachment: {
-        type: "template", 
-        payload: { 
-          template_type: "generic", 
-          elements: [{ 
-            title: "Is this the right picture?", 
-            subtitle: "Tap a button to answer", 
-            image_url: attachment_url, 
-            "buttons": [
-              { 
-                type: "postback", 
-                title: "Yes!", 
-                payload: "yes", 
-              }, 
-              {
-                type: "postback", 
-                title: "No!", 
-                payload: "no"
+  var clothing_array = []; 
+  typing_action(recipientId);         
+
+  // Algorithmia call 
+  var algorithmia_input = attachment_url; 
+  Algorithmia.client(ALGORITHMIA_SECRET)
+    .algo("algo://algorithmiahq/DeepFashion/0.1.1")
+    .pipe(algorithmia_input)
+    .then(function(response) {
+      for (var i = 0; i < response.get().articles.length; i++) {
+        console.log(response.get().articles[i].article_name); 
+        clothing_array.push(response.get().articles[i].article_name);  
+        var messageData = { 
+          recipient: {
+            id: recipientId
+          }, 
+          message: {
+            attachment: {
+              type: "template", 
+              payload: { 
+                template_type: "generic", 
+                elements: [{ 
+                  title: "What did you want from this picture?", 
+                  subtitle: "Tap a button to answer", 
+                  image_url: attachment_url, 
+                  "buttons": [
+                    { 
+                      type: "postback", 
+                      title: response.get().articles[0].article_name, 
+                      payload: "yes", 
+                    }, 
+                    {
+                      type: "postback", 
+                      title: response.get().articles[1].article_name, 
+                      payload: "no"
+                    }
+                  ]
+                }]
               }
-            ]
-          }]
-        }
+            }
+          }
+        };        
       }
-    }
-  }; 
-    
+          
     // Sends the response message
     callSendAPI(messageData);   
+    });
+}
+
+function typing_action(recipientId) {
+  var messageData = {
+    "recipient": { 
+      "id": recipientId
+    }, 
+    "sender_action": "typing_on"
+  }; 
+
+  request({
+    uri: 'https://graph.facebook.com/v2.6/me/messages',
+    qs: { access_token: FB_PAGE_ACCESS_TOKEN },
+    method: 'POST',
+    json: messageData
+
+  }, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      var recipientId = body.recipient_id;
+      var messageId = body.message_id;
+
+      if (messageId) {
+        console.log("[callSendAPI] Successfully sent message with id %s to recipient %s", 
+          messageId, recipientId);
+      } else {
+      console.log("[callSendAPI] Successfully called Send API for recipient %s", 
+        recipientId);
+      }
+    } else {
+      console.error("[callSendAPI] Send API call failed", response.statusCode, response.statusMessage, body.error);
+    }
+  }); 
 }
 
 // Handles messaging_postbacks events
