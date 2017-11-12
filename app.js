@@ -416,7 +416,44 @@ function respondToHelpRequestWithTemplates(recipientId, requestForHelpOnFeature)
         callSendAPI(messageData);
       });
 
+      case 'leggings': 
+        var products = shopify.product.list({ limit: requestPayload.limit});
+        products.then(function(listOfProducs) {
+          listOfProducs.forEach(function(product) {
+            var url = HOST_URL + "/product.html?id="+product.id;
+            templateElements.push({
+              title: product.title,
+              subtitle: product.tags,
+              image_url: product.image.src,
+              buttons:[
+                {
+                  "type":"web_url",
+                  "url": url,
+                  "title":"Read description",
+                  "webview_height_ratio": "compact",
+                  "messenger_extensions": "true"
+                },
+                sectionButton('Get options', 'QR_GET_PRODUCT_OPTIONS', {id: product.id})
+              ]
+            });
+          });
+          var messageData = {
+            recipient: {
+              id: recipientId
+            },
+            message: {
+              attachment: {
+                type: "template",
+                payload: {
+                  template_type: "generic",
+                  elements: templateElements
+                }
+              }
+            }
+          };
 
+          callSendAPI(messageData);
+      }); 
 
       break;
   }
@@ -463,6 +500,7 @@ function receivedPostback(event) {
   // The 'payload' param is a developer-defined field which is set in a postback 
   // button for Structured Messages. 
   var payload = event.postback.payload;
+  console.log("***************" + payload); 
 
   console.log("[receivedPostback] from user (%d) on page (%d) with payload ('%s') " + 
     "at (%d)", senderID, recipientID, payload, timeOfPostback);
@@ -561,7 +599,12 @@ function sendImageOptionsAsButtonsTemplates(recipientId, recieved_image) {
   console.log("[sendImageOptionsAsButtonTemplates] Sending the Image Options Menu");  
   console.log(JSON.stringify(recieved_image)); 
   let attachment_url = recieved_image[0].payload.url; 
-  var clothing_array = []; 
+  // var clothing_array = [{
+  //   type: "postback", 
+  //   title: "No", 
+  //   payload: "no"
+  // }]; 
+  var clothing_array = [];
   typing_action(recipientId);         
 
   // Algorithmia call 
@@ -576,7 +619,8 @@ function sendImageOptionsAsButtonsTemplates(recipientId, recieved_image) {
           {
             type: "postback", 
             title: response.get().articles[i].article_name, 
-            payload: "yes"} 
+            payload: JSON.stringify({action: response.get().articles[i].article_name, limit:3})
+          } 
           );  
         var messageData = { 
           recipient: {
@@ -604,6 +648,7 @@ function sendImageOptionsAsButtonsTemplates(recipientId, recieved_image) {
     });
 }
 
+// Shows the typing action to make it seem more human
 function typing_action(recipientId) {
   var messageData = {
     "recipient": { 
