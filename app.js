@@ -392,8 +392,6 @@ function respondToHelpRequestWithTemplates(recipientId, requestForHelpOnFeature)
         console.log("promise rejected"); 
       }); 
 
-      break;
-
     case 'QR_GET_PRODUCT_OPTIONS':
       var sh_product = shopify.product.get(requestPayload.id);
       sh_product.then(function(product) {
@@ -416,6 +414,48 @@ function respondToHelpRequestWithTemplates(recipientId, requestForHelpOnFeature)
       });
 
       case 'leggings': 
+      var products = shopify.product.list({ limit: requestPayload.limit});
+      products.then(function(listOfProducs) {
+        listOfProducs.forEach(function(product) {
+          var url = HOST_URL + "/product.html?id="+product.id;
+          templateElements.push({
+            title: product.title,
+            subtitle: product.tags,
+            image_url: product.image.src,
+            buttons:[
+              {
+                "type":"web_url",
+                "url": url,
+                "title":"Read description",
+                "webview_height_ratio": "compact",
+                "messenger_extensions": "true"
+              },
+              sectionButton('Get options', 'QR_GET_PRODUCT_OPTIONS', {id: product.id})
+            ]
+          });
+        });
+        var messageData = {
+          recipient: {
+            id: recipientId
+          },
+          message: {
+            attachment: {
+              type: "template",
+              payload: {
+                template_type: "generic",
+                elements: templateElements
+              }
+            }
+          }
+        };
+
+        callSendAPI(messageData);
+      }); 
+
+      break; 
+
+      case 'sweater': 
+        console.log("*******" + requestPayload.action); 
         var products = shopify.product.list({ limit: requestPayload.limit});
         products.then(function(listOfProducs) {
           listOfProducs.forEach(function(product) {
@@ -441,24 +481,31 @@ function respondToHelpRequestWithTemplates(recipientId, requestForHelpOnFeature)
               id: recipientId
             },
             message: {
-              text: "Whoops"
+              attachment: {
+                type: "template",
+                payload: {
+                  template_type: "generic",
+                  elements: templateElements
+                }
+              }
             }
           };
 
           callSendAPI(messageData);
       }); 
 
-      case 'No':
-        console.log("No was pressed"); 
-        var messageData = {
-          recipient: {
-            id: recipientId
-          },
-          message: {
-            text: "Beep Boop. I got it wrong. I'm still learning. Send another image."
-          }
-        };
-        callSendAPI(messageData);
+      // case 'No':
+      //   console.log("No was pressed"); 
+      //   var messageData = {
+      //     recipient: {
+      //       id: recipientId
+      //     },
+      //     message: {
+      //       text: "Beep Boop. I got it wrong. I'm still learning. Send another image."
+      //     }
+      //   };
+      //   callSendAPI(messageData);
+
         
       break;
   }
