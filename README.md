@@ -1,3 +1,15 @@
+Team 10: Apple Sauce
+https://www.facebook.com/Developer-Circles-Toronto-Hack-2017-Team-10-1992959270917362/
+https://github.com/JelaniThompson/DevCircleTorontoHackathon
+
+
+//SHOPIFY CREDENTIALS
+"sh_apiKey": "105c8b81913078c7d0c5ad004a29ff10",
+
+
+
+
+
 # Facebook Developer Circle Toronto Hackathon Seed Project
 
 Follow these steps to get your team's bot configured and off the ground.
