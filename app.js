@@ -255,7 +255,7 @@ function receivedMessage(event) {
     var lcm = messageText.toLowerCase();
     switch (lcm) {
       // if the text matches any special keywords, handle them accordingly
-      case 'help':
+      case 'Help':
         sendHelpOptionsAsButtonTemplates(senderID);
         break;
       default:
@@ -280,7 +280,7 @@ function sendHelpOptionsAsButtonTemplates(recipientId) {
         type:"template",
         payload:{
           template_type:"button",
-          text:"Click the button before to get a list of 3 of our products.",
+          text:"Hello! Attach an image and we'll see if we have something like that!",
           buttons:[
             {
               "type":"postback",
@@ -430,7 +430,8 @@ function respondToHelpRequestWithTemplates(recipientId, requestForHelpOnFeature)
                 "webview_height_ratio": "compact",
                 "messenger_extensions": "true"
               },
-              sectionButton('Get options', 'QR_GET_PRODUCT_OPTIONS', {id: product.id})
+              sectionButton('Get options', 'QR_GET_PRODUCT_OPTIONS', {id: product.id}), 
+              sectionButton('Add To Cart', 'QR_GET_PRODUCT_OPTIONS', {id: product.id})                              
             ]
           });
         });
@@ -455,8 +456,8 @@ function respondToHelpRequestWithTemplates(recipientId, requestForHelpOnFeature)
       break; 
 
       case 'sweater': 
-        console.log("*******" + requestPayload.action); 
         var products = shopify.product.list({ limit: requestPayload.limit});
+        console.log("**************" + JSON.stringify(products)); 
         products.then(function(listOfProducs) {
           listOfProducs.forEach(function(product) {
             var url = HOST_URL + "/product.html?id="+product.id;
@@ -472,7 +473,8 @@ function respondToHelpRequestWithTemplates(recipientId, requestForHelpOnFeature)
                   "webview_height_ratio": "compact",
                   "messenger_extensions": "true"
                 },
-                sectionButton('Get options', 'QR_GET_PRODUCT_OPTIONS', {id: product.id})
+                sectionButton('Get options', 'QR_GET_PRODUCT_OPTIONS', {id: product.id}), 
+                sectionButton('Add To Cart', 'QR_GET_PRODUCT_OPTIONS', {id: product.id})                
               ]
             });
           });
@@ -494,17 +496,19 @@ function respondToHelpRequestWithTemplates(recipientId, requestForHelpOnFeature)
           callSendAPI(messageData);
       }); 
 
-      // case 'No':
-      //   console.log("No was pressed"); 
-      //   var messageData = {
-      //     recipient: {
-      //       id: recipientId
-      //     },
-      //     message: {
-      //       text: "Beep Boop. I got it wrong. I'm still learning. Send another image."
-      //     }
-      //   };
-      //   callSendAPI(messageData);
+      break; 
+
+      case 'No':
+        console.log("No was pressed"); 
+        var messageData = {
+          recipient: {
+            id: recipientId
+          },
+          message: {
+            text: "Beep Boop. I got it wrong. I'm still learning. Send another image."
+          }
+        };
+        callSendAPI(messageData);
 
         
       break;
@@ -693,12 +697,12 @@ function sendImageOptionsAsButtonsTemplates(recipientId, recieved_image) {
           }
         };        
       }
-      clothing_array.push(
-        {
-          type: "postback", 
-          title: "No", 
-          payload: JSON.stringify({action: "No", limit:0})
-        }); 
+      // clothing_array.push(
+      //   {
+      //     type: "postback", 
+      //     title: "No", 
+      //     payload: JSON.stringify({action: "No", limit:0})
+      //   }); 
           
     // Sends the response message
     callSendAPI(messageData);   
