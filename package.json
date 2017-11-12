@@ -17,10 +17,12 @@
   "author": "Facebook",
   "license": "ISC",
   "dependencies": {
+    "algorithmia": "^0.3.10",
     "body-parser": "^1.15.0",
     "config": "^1.20.4",
     "ejs": "^2.4.2",
     "express": "^4.13.4",
+    "file-system": "^2.2.2",
     "ngrok": "^2.2.22",
     "request": "^2.72.0",
     "shopify-api-node": "^2.8.0"

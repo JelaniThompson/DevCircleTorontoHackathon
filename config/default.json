@@ -1,13 +1,16 @@
 {
     "sh_shopName": "dev-circle-toronto-hackathon",
-    "host_url": "http://4fd7088e.ngrok.io", //ngrok URL here
+    "host_url": "https://f01c8f42.ngrok.io", //ngrok URL here
 
     //FACEBOOK CREDENTIALS
-    "fb_appSecret": "8b975cf63dff3237d565b697102e9262",
-    "fb_pageAccessToken": "EAACFsS6DKYQBAOHnQrZCD4e5uNXRClwZAxaZB7Llz9HZCU2BZAhjjZB7JjClGZBqYrpxZCGJh9RyJsTbZBA66T5HvJmmtQjJvZAwFZCHWAmgeLvyFp7IqtDuVw4gvTdwyl1PAMy3qqsKTEMeZCF2Askvf3nqZCSup0Tm6XW9FCvOxrVD1nTpO3CUlemuF",
+    "fb_appSecret": "2a908c33dd2bd69fa224de302f7d71c1",
+    "fb_pageAccessToken": "EAAG8urwLOYwBALROCFJt7M8HxZBQt3krKvytS6dztk2MPYHy6ZChYfs1Kpqu5DS5bYxj4bMXEAEQsZAFhZCnnZCFZBAXVD2hQQ0sxAXsSqw1ZAUve40UZAqjmSwZATe7T9PyZCHpC6JZB4lAklulwJup17g5EzC1pyZBevZBH4COIT29BSC77pZCdScdAn",
     "fb_validationToken": "Apples 'n' Oranges",
 
     //SHOPIFY CREDENTIALS
     "sh_apiKey": "105c8b81913078c7d0c5ad004a29ff10",
-    "sh_apiPassword": "450746da081f91976ad258ade0d883a5"
+    "sh_apiPassword": "450746da081f91976ad258ade0d883a5", 
+
+    //Algortihmia Credentials
+    "algorithmia_key": "simL8Tux90BVI0N9CqHXogOeyZI1"
 }
