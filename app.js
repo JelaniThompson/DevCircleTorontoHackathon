@@ -572,7 +572,12 @@ function sendImageOptionsAsButtonsTemplates(recipientId, recieved_image) {
     .then(function(response) {
       for (var i = 0; i < response.get().articles.length; i++) {
         console.log(response.get().articles[i].article_name); 
-        clothing_array.push(response.get().articles[i].article_name);  
+        clothing_array.push(
+          {
+            type: "postback", 
+            title: response.get().articles[i].article_name, 
+            payload: "yes"} 
+          );  
         var messageData = { 
           recipient: {
             id: recipientId
@@ -586,18 +591,7 @@ function sendImageOptionsAsButtonsTemplates(recipientId, recieved_image) {
                   title: "What did you want from this picture?", 
                   subtitle: "Tap a button to answer", 
                   image_url: attachment_url, 
-                  "buttons": [
-                    { 
-                      type: "postback", 
-                      title: response.get().articles[0].article_name, 
-                      payload: "yes", 
-                    }, 
-                    {
-                      type: "postback", 
-                      title: response.get().articles[1].article_name, 
-                      payload: "no"
-                    }
-                  ]
+                  "buttons": clothing_array
                 }]
               }
             }
