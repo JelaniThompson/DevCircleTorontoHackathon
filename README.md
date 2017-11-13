@@ -1,6 +1,6 @@
 # Clothing Image Detector (CID) for Facebook Messenger
 
-The Facebook messenger app that analyzes clothing objects in a picture and finds that image in the Shopify inventory. 
+The Facebook messenger app analyzes clothing items in a picture and attempts to find that item in a store's inventory that uses Shopify.
 
 Created during the Messenger Bots 2017 Hackathon hosted by Facebook Developer Circles in Toronto.
 
@@ -10,9 +10,13 @@ https://www.facebook.com/Developer-Circles-Toronto-Hack-2017-Team-10-19929592709
 
 https://github.com/JelaniThompson/DevCircleTorontoHackathon
 
-## Use case 
+## Why? 
 
-* The user is a loyal customer to the clothing store CandyBoxx (because of their great customer service and quality clothing options) and CandyBoxx uses the Shopify e-commerance platform to sell clothes
+Many customers come to a store and ask employees if they have a certain article of clothing that they found online and employees attempt to find what they are looking for in their inventory. We made a bot that does that work instead. It analyzes a picture, recognizes the clothes in the picture, and recommend clothes from the store's inventory that look similar to it.
+
+## User story 
+
+* The user is a loyal customer to the clothing store CandyBoxx (because of their great customer service and quality clothing options) and CandyBoxx uses the Shopify e-commerce platform to sell clothes
 * User finds a picture of clothing on Pinterest, Tumblr, Facebook, etc... and wonder if CandyBoxx sells the clothes that are shown in the picture 
 * User uploads that picture to CandyBoxx Facebook Messenger and a bot will analyze the image using the DeepFashion API (uses a convolutional neural network to categorize clothing items)
 * Bot will return options to the user and they have to select what clothing item they want to purchase (because the API will return recognize multiple items of clothing in the picture)
